@@ -3,1146 +3,893 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ClipForge — AI Video Clipper</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>ClipForge</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
-  --bg: #070709;
-  --s1: #0e0e12;
-  --s2: #15151b;
-  --s3: #1e1e27;
-  --border: #ffffff0f;
-  --border2: #ffffff18;
-  --a1: #7c6aff;
-  --a2: #b8a9ff;
-  --a3: #4af0c4;
-  --warn: #ff6b35;
-  --text: #f2f2f5;
-  --muted: #6b6b80;
-  --muted2: #9898aa;
-  --r: 14px;
-  --r-sm: 8px;
+  --bg:      #ffffff;
+  --bg2:     #f7f7f8;
+  --bg3:     #f0f0f2;
+  --border:  #e4e4e7;
+  --text:    #09090b;
+  --muted:   #71717a;
+  --muted2:  #a1a1aa;
+  --accent:  #6366f1;
+  --accent2: #818cf8;
+  --accent-bg: #eef2ff;
+  --green:   #10b981;
+  --warn:    #f59e0b;
+  --red:     #ef4444;
+  --r:       10px;
+  --r-sm:    6px;
+  --shadow:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { scroll-behavior: smooth; }
-
 body {
-  background: var(--bg);
+  font-family: 'Inter', sans-serif;
+  background: var(--bg2);
   color: var(--text);
-  font-family: 'Instrument Sans', sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
+  font-size: 14px;
   line-height: 1.5;
 }
 
-/* Ambient background glow */
-.ambient {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-.ambient::before {
-  content: '';
-  position: absolute;
-  top: -20%;
-  left: 30%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(124,106,255,0.07) 0%, transparent 65%);
-  animation: drift 12s ease-in-out infinite alternate;
-}
-.ambient::after {
-  content: '';
-  position: absolute;
-  bottom: 10%;
-  right: 10%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(74,240,196,0.04) 0%, transparent 65%);
-  animation: drift 9s ease-in-out infinite alternate-reverse;
-}
-@keyframes drift {
-  from { transform: translate(0, 0); }
-  to   { transform: translate(40px, 30px); }
-}
-
-.wrap {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 28px;
-  position: relative;
-  z-index: 1;
-}
-
-/* ── HEADER ── */
-header {
-  padding: 52px 0 40px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+/* ── TOP NAV ── */
+nav {
+  background: white;
   border-bottom: 1px solid var(--border);
-}
-
-.logo-block {}
-.logo {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 44px;
-  letter-spacing: -1.5px;
-  background: linear-gradient(130deg, #fff 0%, var(--a2) 60%, var(--a3) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1;
-}
-.logo-tag {
-  margin-top: 6px;
-  font-size: 12px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--muted);
-  font-weight: 500;
-}
-.header-badge {
+  padding: 0 32px;
+  height: 56px;
   display: flex;
   align-items: center;
-  gap: 7px;
-  background: var(--s2);
-  border: 1px solid var(--border2);
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+
+.nav-logo-icon {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+.nav-badge {
+  font-size: 11px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  padding: 3px 8px;
   border-radius: 20px;
-  padding: 7px 14px;
-  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 0;
+  min-height: calc(100vh - 56px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: white;
+  border-right: 1px solid var(--border);
+  padding: 24px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
   color: var(--muted2);
-  font-family: 'JetBrains Mono', monospace;
-}
-.badge-dot {
-  width: 7px; height: 7px;
-  background: var(--a3);
-  border-radius: 50%;
-  animation: pulse 2s ease infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
+  margin-bottom: 10px;
 }
 
-/* ── UPLOAD ── */
-.upload-wrap { margin-top: 40px; }
-
-.dropzone {
-  position: relative;
-  border: 1.5px dashed var(--border2);
+/* Upload zone */
+.upload-zone {
+  border: 1.5px dashed var(--border);
   border-radius: var(--r);
-  padding: 56px 40px;
+  padding: 28px 16px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.25s, background 0.25s;
-  background: var(--s1);
-  overflow: hidden;
+  transition: all 0.2s;
+  position: relative;
+  background: var(--bg2);
 }
-.dropzone::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(124,106,255,0.06), transparent 60%);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.dropzone:hover, .dropzone.over { border-color: var(--a1); }
-.dropzone:hover::before, .dropzone.over::before { opacity: 1; }
+.upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-zone:hover, .upload-zone.over { border-color: var(--accent); background: var(--accent-bg); }
+.uz-icon { font-size: 28px; margin-bottom: 8px; }
+.uz-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.uz-sub   { font-size: 12px; color: var(--muted); }
 
-.dropzone input[type="file"] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-}
-.dz-icon {
-  font-size: 42px;
-  margin-bottom: 14px;
-  display: block;
-  filter: grayscale(0.3);
-}
-.dz-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-  margin-bottom: 6px;
-}
-.dz-sub { font-size: 13px; color: var(--muted); }
-
-.file-pill {
+.file-chip {
   display: none;
   align-items: center;
-  gap: 12px;
-  background: rgba(124,106,255,0.08);
-  border: 1px solid rgba(124,106,255,0.25);
-  border-radius: var(--r-sm);
-  padding: 13px 18px;
-  margin-top: 14px;
-  animation: fadeUp 0.3s ease;
-}
-.file-pill.show { display: flex; }
-.pill-icon { font-size: 22px; }
-.pill-name { font-size: 14px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pill-size { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-.pill-remove {
-  background: none; border: none; color: var(--muted); cursor: pointer;
-  font-size: 18px; line-height: 1; padding: 2px;
-  transition: color 0.2s;
-}
-.pill-remove:hover { color: var(--warn); }
-
-/* ── SECTION LABEL ── */
-.section-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 2.5px;
-  color: var(--muted);
-  font-weight: 700;
-  margin-bottom: 14px;
-  margin-top: 32px;
-  display: flex;
-  align-items: center;
   gap: 10px;
+  background: var(--accent-bg);
+  border: 1px solid #c7d2fe;
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  margin-top: 10px;
 }
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
+.file-chip.show { display: flex; }
+.fc-name { font-size: 12.5px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fc-size { font-size: 11px; color: var(--muted); }
+.fc-rm   { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 16px; line-height: 1; padding: 2px; transition: color 0.15s; }
+.fc-rm:hover { color: var(--red); }
 
-/* ── SETTINGS GRID ── */
-.settings-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.card {
-  background: var(--s1);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 18px 20px;
-  transition: border-color 0.2s;
-}
-.card:hover { border-color: var(--border2); }
-.card.span2 { grid-column: 1 / -1; }
-.card-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1.8px;
-  color: var(--muted);
-  font-weight: 600;
-  margin-bottom: 13px;
-}
+/* Setting blocks */
+.setting-block { display: flex; flex-direction: column; gap: 8px; }
 
-/* ── PILL TOGGLES ── */
-.toggle-row { display: flex; gap: 7px; flex-wrap: wrap; }
-.tog {
-  background: var(--s2);
-  border: 1px solid var(--border);
-  color: var(--muted2);
-  padding: 7px 14px;
+/* Chip toggles */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-size: 12px; font-weight: 500;
+  padding: 5px 11px;
   border-radius: 20px;
-  font-size: 12.5px;
-  font-family: 'Instrument Sans', sans-serif;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--muted);
   cursor: pointer;
-  transition: all 0.18s;
-  font-weight: 500;
+  transition: all 0.15s;
   white-space: nowrap;
 }
-.tog.on {
-  background: rgba(124,106,255,0.15);
-  border-color: rgba(124,106,255,0.5);
-  color: var(--a2);
+.chip.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
 }
-.tog:hover:not(.on) { border-color: var(--border2); color: var(--text); }
+.chip:hover:not(.on) { border-color: var(--accent2); color: var(--accent); }
 
-/* ── RANGE SLIDER ── */
-.slider-wrap { display: flex; align-items: center; gap: 14px; }
+/* Slider */
+.slider-row { display: flex; align-items: center; gap: 10px; }
 input[type="range"] {
-  flex: 1;
-  -webkit-appearance: none;
-  height: 3px;
-  background: var(--s3);
-  border-radius: 2px;
-  outline: none;
+  flex: 1; -webkit-appearance: none;
+  height: 3px; background: var(--bg3); border-radius: 2px; outline: none;
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 16px; height: 16px;
-  background: var(--a1);
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 0 0 3px rgba(124,106,255,0.2);
-  transition: box-shadow 0.2s;
+  width: 15px; height: 15px;
+  background: var(--accent); border-radius: 50%;
+  cursor: pointer; border: 2px solid white;
+  box-shadow: 0 0 0 2px var(--accent2);
+  transition: box-shadow 0.15s;
 }
 input[type="range"]::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 0 6px rgba(124,106,255,0.2);
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.2);
 }
-.slider-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  color: var(--a1);
-  font-weight: 500;
-  min-width: 38px;
-  text-align: right;
-}
+.slider-val { font-size: 12px; font-weight: 600; color: var(--accent); min-width: 30px; text-align: right; }
 
-/* ── CHECKBOX ── */
-.checks { display: flex; flex-direction: column; gap: 11px; }
-.check-item { display: flex; align-items: flex-start; gap: 11px; cursor: pointer; }
-input[type="checkbox"] {
-  -webkit-appearance: none;
-  width: 18px; height: 18px;
-  border: 1.5px solid var(--border2);
-  border-radius: 5px;
-  cursor: pointer;
-  position: relative;
-  flex-shrink: 0;
-  margin-top: 2px;
-  transition: all 0.18s;
-  background: var(--s2);
-}
-input[type="checkbox"]:checked {
-  background: var(--a1);
-  border-color: var(--a1);
-}
-input[type="checkbox"]:checked::after {
-  content: '✓';
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  color: white; font-size: 11px; font-weight: bold;
-}
-.check-text .ct-title { font-size: 13.5px; font-weight: 500; }
-.check-text .ct-desc { font-size: 12px; color: var(--muted); margin-top: 1px; }
+/* Toggle switches */
+.toggle-list { display: flex; flex-direction: column; gap: 10px; }
+.toggle-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.toggle-label { font-size: 13px; font-weight: 500; }
+.toggle-desc  { font-size: 11.5px; color: var(--muted); margin-top: 1px; }
 
-/* ── BRIEF TEXTAREA ── */
-.brief-area {
-  width: 100%;
-  background: var(--s2);
+.switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch-track {
+  position: absolute; inset: 0;
+  background: var(--bg3); border-radius: 20px;
   border: 1px solid var(--border);
-  color: var(--text);
+  cursor: pointer; transition: all 0.2s;
+}
+.switch input:checked ~ .switch-track { background: var(--accent); border-color: var(--accent); }
+.switch-track::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  background: white; border-radius: 50%;
+  top: 2px; left: 2px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.switch input:checked ~ .switch-track::after { transform: translateX(16px); }
+
+/* Brief textarea */
+.brief-input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  padding: 13px 15px;
-  font-size: 13.5px;
-  font-family: 'Instrument Sans', sans-serif;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
   resize: vertical;
-  min-height: 80px;
-  transition: border-color 0.2s;
+  min-height: 72px;
+  transition: border-color 0.15s;
   line-height: 1.5;
 }
-.brief-area:focus { outline: none; border-color: var(--a1); }
-.brief-area::placeholder { color: var(--muted); }
+.brief-input:focus { outline: none; border-color: var(--accent); }
+.brief-input::placeholder { color: var(--muted2); }
 
-/* ── API INPUTS ── */
-.api-row { display: flex; flex-direction: column; gap: 10px; }
-.api-field { display: flex; flex-direction: column; gap: 5px; }
-.api-field-label {
-  font-size: 11px; color: var(--muted);
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: 0.5px;
+/* API inputs */
+.api-field { display: flex; flex-direction: column; gap: 4px; }
+.api-label {
+  font-size: 11px; font-weight: 600;
+  color: var(--muted); letter-spacing: 0.3px;
+  display: flex; align-items: center; gap: 6px;
 }
+.api-badge {
+  font-size: 10px; padding: 1px 6px; border-radius: 3px;
+  background: var(--accent-bg); color: var(--accent); font-weight: 600;
+}
+.api-badge.opt { background: #f0fdf4; color: var(--green); }
 .api-input {
-  background: var(--s2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 11px 14px;
-  border-radius: var(--r-sm);
-  font-size: 13px;
-  font-family: 'JetBrains Mono', monospace;
   width: 100%;
-  transition: border-color 0.2s;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 9px 12px;
+  font-size: 12.5px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  transition: border-color 0.15s;
 }
-.api-input:focus { outline: none; border-color: var(--a1); }
-.api-hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
-.api-hint a { color: var(--a1); text-decoration: none; }
+.api-input:focus { outline: none; border-color: var(--accent); }
+.api-hint { font-size: 11px; color: var(--muted2); }
+.api-hint a { color: var(--accent); text-decoration: none; }
 
-/* ── FORGE BUTTON ── */
+/* Forge button */
 .forge-btn {
   width: 100%;
-  margin-top: 24px;
-  padding: 17px;
-  background: linear-gradient(135deg, var(--a1), #9d8fff);
+  padding: 13px;
+  background: var(--accent);
   color: white;
   border: none;
   border-radius: var(--r);
-  font-family: 'Syne', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.25s;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
 }
-.forge-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-.forge-btn:hover:not(:disabled)::before { opacity: 1; }
 .forge-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(124,106,255,0.35);
+  background: #4f46e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(99,102,241,0.4);
 }
-.forge-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.forge-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
-/* ── ERROR ── */
-.error-box {
-  display: none;
-  background: rgba(255,107,53,0.08);
-  border: 1px solid rgba(255,107,53,0.3);
-  border-radius: var(--r-sm);
-  padding: 13px 16px;
-  font-size: 13px;
-  color: #ff8c65;
-  margin-top: 14px;
-  font-family: 'JetBrains Mono', monospace;
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
 }
-.error-box.show { display: block; }
 
-/* ── PROGRESS ── */
-#prog-panel {
-  display: none;
-  margin-top: 28px;
-  background: var(--s1);
+/* ── MAIN CONTENT ── */
+.main {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Empty state */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 40px;
+  color: var(--muted);
+}
+.empty-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.4; }
+.empty-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.empty-sub { font-size: 14px; color: var(--muted); max-width: 340px; line-height: 1.6; }
+
+/* Progress card */
+.prog-card {
+  background: white;
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 24px 26px;
-  animation: fadeUp 0.3s ease;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  display: none;
 }
-#prog-panel.show { display: block; }
+.prog-card.show { display: block; }
 
-.prog-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-}
-.prog-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-.prog-pct {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  color: var(--a1);
-  font-weight: 500;
-}
+.prog-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.prog-title { font-size: 15px; font-weight: 600; }
+.prog-pct { font-size: 13px; font-weight: 600; color: var(--accent); }
 
-.prog-track {
-  background: var(--s3);
-  border-radius: 3px;
-  height: 4px;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-.prog-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--a1), var(--a3));
-  border-radius: 3px;
-  transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-  width: 0%;
-}
+.prog-track { background: var(--bg3); border-radius: 4px; height: 5px; overflow: hidden; margin-bottom: 16px; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.6s ease; width: 0; }
 
-.prog-steps { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
-.prog-step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 12.5px;
-  color: var(--muted);
+.prog-steps { display: flex; flex-direction: column; gap: 8px; }
+.step {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--muted2);
   transition: color 0.3s;
 }
-.prog-step.active { color: var(--text); }
-.prog-step.done { color: var(--a3); }
-.step-icon { font-size: 14px; width: 18px; text-align: center; }
-.prog-msg {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11.5px;
-  color: var(--muted);
-  margin-top: 10px;
-  opacity: 0.7;
+.step.active { color: var(--text); font-weight: 500; }
+.step.done   { color: var(--green); }
+.step-dot {
+  width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; transition: all 0.3s;
 }
+.step.active .step-dot { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+.step.done   .step-dot { border-color: var(--green);  background: #f0fdf4; color: var(--green); }
 
-/* ── RESULTS ── */
-#results-panel {
-  display: none;
-  margin-top: 28px;
-  animation: fadeUp 0.4s ease;
-}
-#results-panel.show { display: block; }
+.prog-msg { font-size: 12px; color: var(--muted); margin-top: 12px; font-style: italic; }
 
-.results-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
+/* Error */
+.err-box {
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: var(--r-sm); padding: 12px 14px;
+  font-size: 13px; color: var(--red); display: none;
 }
-.results-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-}
-.results-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: var(--muted);
-  background: var(--s2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 5px 12px;
-}
+.err-box.show { display: block; }
 
-.clips-list { display: flex; flex-direction: column; gap: 12px; }
+/* Results */
+.results-header {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.results-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+.results-meta  { font-size: 13px; color: var(--muted); }
+
+.clips-grid { display: grid; gap: 14px; }
 
 .clip-card {
-  background: var(--s1);
+  background: white;
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 20px 22px;
-  display: grid;
-  grid-template-columns: 48px 1fr auto;
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  display: flex;
   gap: 16px;
-  align-items: start;
-  animation: fadeUp 0.4s ease both;
-  transition: border-color 0.2s;
+  align-items: flex-start;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  animation: fadeUp 0.35s ease both;
 }
-.clip-card:hover { border-color: var(--border2); }
+.clip-card:hover { border-color: #c7d2fe; box-shadow: var(--shadow-md); }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .clip-num {
-  font-family: 'Syne', sans-serif;
-  font-size: 36px;
-  font-weight: 800;
-  color: var(--border2);
-  line-height: 1;
-  text-align: center;
+  font-size: 28px; font-weight: 700;
+  color: var(--border); line-height: 1;
+  min-width: 36px; text-align: center;
+  padding-top: 2px;
 }
 
-.clip-body {}
-.clip-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-  margin-bottom: 4px;
-}
-.clip-hook {
-  font-size: 13px;
-  color: var(--a2);
-  font-style: italic;
-  margin-bottom: 8px;
-  opacity: 0.85;
-}
-.clip-hook::before { content: '"'; }
-.clip-hook::after { content: '"'; }
-.clip-reason { font-size: 13px; color: var(--muted2); margin-bottom: 12px; }
+.clip-body { flex: 1; min-width: 0; }
+.clip-title  { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.clip-hook   { font-size: 12.5px; color: var(--accent); margin-bottom: 6px; font-style: italic; }
+.clip-reason { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
 
-.clip-meta { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
-.meta-pill {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  padding: 3px 9px;
-  border-radius: 4px;
-  background: var(--s2);
-  border: 1px solid var(--border);
-  color: var(--muted2);
+.clip-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.tag {
+  font-size: 11px; padding: 3px 8px;
+  border-radius: 4px; background: var(--bg2);
+  border: 1px solid var(--border); color: var(--muted);
+  font-weight: 500;
 }
-
-.score-mini {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: var(--muted2);
-}
-.score-bars {
-  display: flex;
-  gap: 2px;
-  align-items: flex-end;
-}
-.score-bar-item {
-  width: 3px;
-  border-radius: 1px;
-  background: var(--s3);
-  transition: background 0.3s;
-}
-.score-bar-item.lit { background: var(--a1); }
+.tag.score { background: var(--accent-bg); border-color: #c7d2fe; color: var(--accent); }
 
 .score-breakdown {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-  flex-wrap: wrap;
+  display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;
 }
-.breakdown-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--muted);
-  font-family: 'JetBrains Mono', monospace;
+.bd-item {
+  font-size: 11px; color: var(--muted2);
+  display: flex; align-items: center; gap: 4px;
 }
-.breakdown-val { color: var(--a2); font-weight: 500; }
+.bd-val { color: var(--accent); font-weight: 600; }
 
-.clip-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
 .dl-btn {
-  background: var(--s2);
-  border: 1px solid var(--border2);
-  color: var(--text);
-  padding: 9px 18px;
+  background: var(--bg2); border: 1px solid var(--border);
+  color: var(--text); padding: 9px 16px;
   border-radius: var(--r-sm);
-  font-size: 13px;
-  font-family: 'Instrument Sans', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  white-space: nowrap;
+  font-size: 13px; font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer; text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap; flex-shrink: 0;
+  transition: all 0.15s;
 }
 .dl-btn:hover {
-  background: var(--a1);
-  border-color: var(--a1);
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(124,106,255,0.3);
+  background: var(--accent); border-color: var(--accent);
+  color: white; transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99,102,241,0.25);
 }
 
-/* ── RESET ── */
-.reset-area { margin-top: 24px; display: flex; justify-content: center; }
 .reset-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  padding: 10px 22px;
-  border-radius: var(--r-sm);
-  font-size: 13px;
-  font-family: 'Instrument Sans', sans-serif;
-  cursor: pointer;
-  transition: all 0.2s;
+  background: none; border: 1px solid var(--border);
+  color: var(--muted); padding: 9px 18px;
+  border-radius: var(--r-sm); font-size: 13px;
+  font-family: 'Inter', sans-serif; cursor: pointer;
+  transition: all 0.15s;
 }
-.reset-btn:hover { border-color: var(--border2); color: var(--text); }
+.reset-btn:hover { border-color: var(--text); color: var(--text); }
 
-/* ── FOOTER ── */
-footer {
-  margin: 60px 0 36px;
-  padding-top: 22px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  color: var(--muted);
-}
-.ft-brand {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: -0.3px;
-  color: var(--s3);
-}
-.ft-stack { font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-
-@media (max-width: 620px) {
-  .settings-grid { grid-template-columns: 1fr; }
-  .card.span2 { grid-column: 1; }
-  .clip-card { grid-template-columns: 36px 1fr; }
-  .clip-actions { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; }
-  header { flex-direction: column; align-items: flex-start; gap: 14px; }
-  .logo { font-size: 36px; }
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+  .clip-card { flex-direction: column; }
 }
 </style>
 </head>
 <body>
-<div class="ambient"></div>
 
-<div class="wrap">
-
-  <!-- HEADER -->
-  <header>
-    <div class="logo-block">
-      <div class="logo">ClipForge</div>
-      <div class="logo-tag">AI-Powered Video Clipping</div>
-    </div>
-    <div class="header-badge">
-      <span class="badge-dot"></span>
-      Powered by Claude + Whisper
-    </div>
-  </header>
-
-  <!-- UPLOAD -->
-  <div class="upload-wrap">
-    <div class="dropzone" id="dropzone">
-      <input type="file" id="file-input" accept="video/*">
-      <span class="dz-icon">🎬</span>
-      <div class="dz-title">Drop your video here</div>
-      <div class="dz-sub">MP4 · MOV · AVI · MKV — up to 2 GB</div>
-    </div>
-    <div class="file-pill" id="file-pill">
-      <span class="pill-icon">📹</span>
-      <span class="pill-name" id="pill-name"></span>
-      <span class="pill-size" id="pill-size"></span>
-      <button class="pill-remove" id="pill-remove" title="Remove">✕</button>
-    </div>
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">✂</div>
+    ClipForge
   </div>
+  <div class="nav-badge">AI-Powered</div>
+</nav>
 
-  <!-- CLIP SETTINGS -->
-  <div class="section-label">Clip Settings</div>
-  <div class="settings-grid">
+<div class="layout">
 
-    <div class="card">
-      <div class="card-label">Clip Style</div>
-      <div class="toggle-row">
-        <button class="tog on" data-g="style" data-v="highlights">🔥 Highlights</button>
-        <button class="tog" data-g="style" data-v="hook">🎣 Hook</button>
-        <button class="tog" data-g="style" data-v="story">📖 Story Arc</button>
-        <button class="tog" data-g="style" data-v="quote">💬 Quote</button>
-        <button class="tog" data-g="style" data-v="educational">🧠 Educational</button>
-        <button class="tog" data-g="style" data-v="emotional">❤️ Emotional</button>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Upload -->
+    <div class="setting-block">
+      <div class="section-title">Video</div>
+      <div class="upload-zone" id="dropzone">
+        <input type="file" id="file-input" accept="video/*">
+        <div class="uz-icon">🎬</div>
+        <div class="uz-title">Drop video here</div>
+        <div class="uz-sub">MP4 · MOV · AVI — up to 2GB</div>
+      </div>
+      <div class="file-chip" id="file-chip">
+        <span>📹</span>
+        <span class="fc-name" id="fc-name"></span>
+        <span class="fc-size" id="fc-size"></span>
+        <button class="fc-rm" id="fc-rm">✕</button>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-label">Output Format</div>
-      <div class="toggle-row">
-        <button class="tog on" data-g="format" data-v="vertical">📱 Vertical 9:16</button>
-        <button class="tog" data-g="format" data-v="horizontal">🖥 Horizontal</button>
+    <div class="divider"></div>
+
+    <!-- Clip settings -->
+    <div class="setting-block">
+      <div class="section-title">Clip Settings</div>
+
+      <div style="margin-bottom:4px">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px">Style</div>
+        <div class="chips">
+          <span class="chip on" data-g="style" data-v="highlights">🔥 Highlights</span>
+          <span class="chip" data-g="style" data-v="hook">🎣 Hook</span>
+          <span class="chip" data-g="style" data-v="story">📖 Story</span>
+          <span class="chip" data-g="style" data-v="quote">💬 Quote</span>
+          <span class="chip" data-g="style" data-v="educational">🧠 Educational</span>
+          <span class="chip" data-g="style" data-v="emotional">❤️ Emotional</span>
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px">Format</div>
+        <div class="chips">
+          <span class="chip on" data-g="format" data-v="vertical">📱 Vertical 9:16</span>
+          <span class="chip" data-g="format" data-v="horizontal">🖥 Horizontal</span>
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px">Clips: <span id="cc-val" style="color:var(--accent);font-weight:600">3</span></div>
+        <div class="slider-row">
+          <input type="range" id="clip-count" min="1" max="10" value="3">
+        </div>
+      </div>
+
+      <div style="margin-top:8px">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px">Duration: <span id="cd-val" style="color:var(--accent);font-weight:600">60s</span></div>
+        <div class="slider-row">
+          <input type="range" id="clip-dur" min="15" max="180" value="60" step="5">
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-label">Number of Clips</div>
-      <div class="slider-wrap">
-        <input type="range" id="clip-count" min="1" max="10" value="3">
-        <span class="slider-val" id="cc-val">3</span>
+    <div class="divider"></div>
+
+    <!-- Subtitles -->
+    <div class="setting-block">
+      <div class="section-title">Subtitles</div>
+      <div style="margin-bottom:6px">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px">Style</div>
+        <div class="chips">
+          <span class="chip on" data-g="sub_style" data-v="word_by_word">✨ Word-by-Word</span>
+          <span class="chip" data-g="sub_style" data-v="static">📄 Static</span>
+        </div>
+      </div>
+      <div style="margin-bottom:6px">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px">Position</div>
+        <div class="chips">
+          <span class="chip" data-g="sub_pos" data-v="top">↑ Top</span>
+          <span class="chip" data-g="sub_pos" data-v="middle">⬛ Mid</span>
+          <span class="chip on" data-g="sub_pos" data-v="bottom">↓ Bottom</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px">Colour</div>
+        <div class="chips">
+          <span class="chip on" data-g="sub_preset" data-v="white_bold">⬜ White</span>
+          <span class="chip" data-g="sub_preset" data-v="yellow">💛 Yellow</span>
+          <span class="chip" data-g="sub_preset" data-v="neon_green">💚 Green</span>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-label">Clip Duration</div>
-      <div class="slider-wrap">
-        <input type="range" id="clip-dur" min="15" max="180" value="60" step="5">
-        <span class="slider-val" id="cd-val">60s</span>
-      </div>
-    </div>
+    <div class="divider"></div>
 
-  </div>
-
-  <!-- SUBTITLE SETTINGS -->
-  <div class="section-label">Subtitles</div>
-  <div class="settings-grid">
-
-    <div class="card">
-      <div class="card-label">Caption Style</div>
-      <div class="toggle-row">
-        <button class="tog on" data-g="sub_style" data-v="word_by_word">✨ Word-by-Word</button>
-        <button class="tog" data-g="sub_style" data-v="static">📄 Static Lines</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-label">Position</div>
-      <div class="toggle-row">
-        <button class="tog" data-g="sub_pos" data-v="top">⬆ Top</button>
-        <button class="tog" data-g="sub_pos" data-v="middle">⬛ Middle</button>
-        <button class="tog on" data-g="sub_pos" data-v="bottom">⬇ Bottom</button>
-      </div>
-    </div>
-
-    <div class="card span2">
-      <div class="card-label">Caption Colour Preset</div>
-      <div class="toggle-row">
-        <button class="tog on" data-g="sub_preset" data-v="white_bold">⬜ Clean White</button>
-        <button class="tog" data-g="sub_preset" data-v="yellow">💛 Bold Yellow</button>
-        <button class="tog" data-g="sub_preset" data-v="neon_green">💚 Neon Green</button>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ENHANCEMENTS -->
-  <div class="section-label">Enhancements</div>
-  <div class="settings-grid">
-
-    <div class="card">
-      <div class="card-label">Video Edits</div>
-      <div class="checks">
-        <label class="check-item">
-          <input type="checkbox" id="sub-toggle" checked>
-          <div class="check-text">
-            <div class="ct-title">Auto Subtitles</div>
-            <div class="ct-desc">Burn styled captions into the video</div>
+    <!-- Enhancements -->
+    <div class="setting-block">
+      <div class="section-title">Enhancements</div>
+      <div class="toggle-list">
+        <div class="toggle-item">
+          <div>
+            <div class="toggle-label">Auto Subtitles</div>
+            <div class="toggle-desc">Burn captions into video</div>
           </div>
-        </label>
-        <label class="check-item">
-          <input type="checkbox" id="silence-toggle" checked>
-          <div class="check-text">
-            <div class="ct-title">Remove Silence</div>
-            <div class="ct-desc">Cut dead air for snappier edits</div>
+          <label class="switch">
+            <input type="checkbox" id="sub-on" checked>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="toggle-item">
+          <div>
+            <div class="toggle-label">Remove Silence</div>
+            <div class="toggle-desc">Cut dead air automatically</div>
           </div>
-        </label>
-        <label class="check-item">
-          <input type="checkbox" id="normalize-toggle" checked>
-          <div class="check-text">
-            <div class="ct-title">Normalize Audio</div>
-            <div class="ct-desc">Balance volume so the speaker is always clear</div>
+          <label class="switch">
+            <input type="checkbox" id="silence-on" checked>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+        <div class="toggle-item">
+          <div>
+            <div class="toggle-label">Normalize Audio</div>
+            <div class="toggle-desc">Balance volume levels</div>
           </div>
-        </label>
+          <label class="switch">
+            <input type="checkbox" id="norm-on" checked>
+            <span class="switch-track"></span>
+          </label>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px">Transition</div>
+        <div class="chips">
+          <span class="chip on" data-g="transition" data-v="hard_cut">✂️ Hard Cut</span>
+          <span class="chip" data-g="transition" data-v="zoom_cut">🔍 Zoom</span>
+          <span class="chip" data-g="transition" data-v="fade">🌫 Fade</span>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-label">Transition Style</div>
-      <div class="toggle-row" style="margin-bottom:16px">
-        <button class="tog on" data-g="transition" data-v="hard_cut">✂️ Hard Cut</button>
-        <button class="tog" data-g="transition" data-v="zoom_cut">🔍 Zoom Cut</button>
-        <button class="tog" data-g="transition" data-v="fade">🌫 Fade</button>
-      </div>
-      <div class="card-label" style="margin-top:4px">Background Music</div>
-      <div class="toggle-row">
-        <button class="tog on" data-g="music" data-v="none">🔇 None</button>
-        <button class="tog" data-g="music" data-v="energetic">⚡ Energetic</button>
-        <button class="tog" data-g="music" data-v="chill">🌊 Chill</button>
-        <button class="tog" data-g="music" data-v="dramatic">🎭 Dramatic</button>
-      </div>
+    <div class="divider"></div>
+
+    <!-- Brief -->
+    <div class="setting-block">
+      <div class="section-title">Content Brief <span style="font-size:10px;font-weight:600;color:var(--accent);letter-spacing:0">optional</span></div>
+      <textarea class="brief-input" id="brief"
+        placeholder="e.g. Clipping for a Lagos fintech brand targeting 25–35 year olds on Instagram Reels. Confident, punchy tone. Favour bold statements about money."></textarea>
+      <div style="font-size:11px;color:var(--muted2);margin-top:4px">Claude uses this to pick clips for your specific audience.</div>
     </div>
 
-  </div>
+    <div class="divider"></div>
 
-  <!-- CONTENT BRIEF -->
-  <div class="section-label">Content Brief <span style="font-size:10px;letter-spacing:1px;color:var(--a1);margin-left:6px">OPTIONAL</span></div>
-  <div class="card span2" style="margin-bottom:0">
-    <div class="card-label">Describe your audience, platform, and style</div>
-    <textarea
-      class="brief-area"
-      id="brief"
-      placeholder="e.g. I clip for a fintech startup targeting young professionals in Nigeria. The clips go on LinkedIn and Instagram Reels. The tone should be sharp, confident, and fast-paced. Favour moments that challenge conventional thinking about money."
-    ></textarea>
-    <div class="api-hint" style="margin-top:8px">Claude uses this to pick clips that match your specific context and audience — not just generic highlights.</div>
-  </div>
-
-  <!-- API KEYS -->
-  <div class="section-label">API Keys</div>
-  <div class="card span2">
-    <div class="api-row">
+    <!-- API Keys -->
+    <div class="setting-block">
+      <div class="section-title">API Keys</div>
       <div class="api-field">
-        <div class="api-field-label">ANTHROPIC_API_KEY *</div>
-        <input type="password" class="api-input" id="anthropic-key" placeholder="sk-ant-api03-...">
-        <div class="api-hint">Required. Get yours at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — costs ~$0.01–0.05 per video.</div>
+        <div class="api-label">Anthropic <span class="api-badge">Required</span></div>
+        <input type="password" class="api-input" id="anthropic-key" placeholder="sk-ant-api03-…">
+        <div class="api-hint">Get yours at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
       </div>
-      <div class="api-field">
-        <div class="api-field-label">GROQ_API_KEY <span style="color:var(--a3);font-size:10px">OPTIONAL — FASTER TRANSCRIPTION</span></div>
-        <input type="password" class="api-input" id="groq-key" placeholder="gsk_...">
-        <div class="api-hint">Optional. If provided, uses Groq's free Whisper API (10× faster). Get one at <a href="https://console.groq.com" target="_blank">console.groq.com</a></div>
+      <div class="api-field" style="margin-top:10px">
+        <div class="api-label">Groq <span class="api-badge opt">Optional — Faster</span></div>
+        <input type="password" class="api-input" id="groq-key" placeholder="gsk_…">
+        <div class="api-hint">Free at <a href="https://console.groq.com" target="_blank">console.groq.com</a> — 10× faster transcription</div>
       </div>
     </div>
-  </div>
 
-  <!-- FORGE BUTTON -->
-  <button class="forge-btn" id="forge-btn" disabled>⚡ Forge Clips</button>
-  <div class="error-box" id="err-box"></div>
+    <button class="forge-btn" id="forge-btn" disabled>
+      ⚡ Forge Clips
+    </button>
 
-  <!-- PROGRESS -->
-  <div id="prog-panel">
-    <div class="prog-head">
-      <span class="prog-title">Processing your video</span>
-      <span class="prog-pct" id="prog-pct">0%</span>
-    </div>
-    <div class="prog-track">
-      <div class="prog-fill" id="prog-fill"></div>
-    </div>
-    <div class="prog-steps">
-      <div class="prog-step" id="step-upload">
-        <span class="step-icon">📤</span> Uploading & reading video
-      </div>
-      <div class="prog-step" id="step-transcribe">
-        <span class="step-icon">🎙</span> Transcribing audio with Whisper
-      </div>
-      <div class="prog-step" id="step-ai">
-        <span class="step-icon">🤖</span> Claude selecting best moments
-      </div>
-      <div class="prog-step" id="step-render">
-        <span class="step-icon">🎬</span> Cutting, cropping & rendering clips
-      </div>
-    </div>
-    <div class="prog-msg" id="prog-msg">> Initialising pipeline...</div>
-  </div>
+  </aside>
 
-  <!-- RESULTS -->
-  <div id="results-panel">
-    <div class="results-head">
-      <div class="results-title">✅ Clips Ready</div>
-      <div class="results-count" id="results-count">0 clips</div>
-    </div>
-    <div class="clips-list" id="clips-list"></div>
-    <div class="reset-area">
-      <button class="reset-btn" id="reset-btn">← Process another video</button>
-    </div>
-  </div>
+  <!-- MAIN -->
+  <main class="main">
 
-  <footer>
-    <span class="ft-brand">ClipForge</span>
-    <span class="ft-stack">Claude API · faster-whisper · FFmpeg</span>
-  </footer>
+    <!-- Empty state -->
+    <div class="empty-state" id="empty-state">
+      <div class="empty-icon">🎬</div>
+      <div class="empty-title">Ready to forge clips</div>
+      <div class="empty-sub">Upload a video, configure your settings, and let AI find the best moments for you.</div>
+    </div>
 
+    <!-- Error -->
+    <div class="err-box" id="err-box"></div>
+
+    <!-- Progress -->
+    <div class="prog-card" id="prog-card">
+      <div class="prog-head">
+        <span class="prog-title">Processing your video</span>
+        <span class="prog-pct" id="prog-pct">0%</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" id="prog-fill"></div>
+      </div>
+      <div class="prog-steps">
+        <div class="step" id="s-upload">
+          <div class="step-dot">1</div>
+          Upload & read video
+        </div>
+        <div class="step" id="s-transcribe">
+          <div class="step-dot">2</div>
+          Transcribe audio with Whisper
+        </div>
+        <div class="step" id="s-ai">
+          <div class="step-dot">3</div>
+          Claude selects best moments
+        </div>
+        <div class="step" id="s-render">
+          <div class="step-dot">4</div>
+          Cut, crop & render clips
+        </div>
+      </div>
+      <div class="prog-msg" id="prog-msg">Initialising…</div>
+    </div>
+
+    <!-- Results -->
+    <div id="results-wrap" style="display:none">
+      <div class="results-header" style="margin-bottom:16px">
+        <div class="results-title">✅ Clips ready</div>
+        <div class="results-meta" id="results-meta"></div>
+      </div>
+      <div class="clips-grid" id="clips-grid"></div>
+      <div style="margin-top:20px">
+        <button class="reset-btn" id="reset-btn">← Process another video</button>
+      </div>
+    </div>
+
+  </main>
 </div>
 
 <script>
-// ── STATE ──
+// ── STATE
 let file = null;
-const state = {
-  style: 'highlights', format: 'vertical',
-  sub_style: 'word_by_word', sub_pos: 'bottom', sub_preset: 'white_bold',
-  transition: 'hard_cut', music: 'none',
-};
+const st = { style:'highlights', format:'vertical', sub_style:'word_by_word',
+             sub_pos:'bottom', sub_preset:'white_bold', transition:'hard_cut' };
 
-// ── TOGGLES ──
-document.querySelectorAll('.tog').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const g = btn.dataset.g;
-    document.querySelectorAll(`[data-g="${g}"]`).forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
-    state[g] = btn.dataset.v;
+// ── CHIPS
+document.querySelectorAll('.chip').forEach(c => {
+  c.addEventListener('click', () => {
+    const g = c.dataset.g;
+    document.querySelectorAll(`[data-g="${g}"]`).forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+    st[g] = c.dataset.v;
   });
 });
 
-// ── SLIDERS ──
+// ── SLIDERS
 const cc = document.getElementById('clip-count');
-const ccv = document.getElementById('cc-val');
-cc.addEventListener('input', () => ccv.textContent = cc.value);
-
 const cd = document.getElementById('clip-dur');
-const cdv = document.getElementById('cd-val');
-cd.addEventListener('input', () => cdv.textContent = cd.value + 's');
+cc.addEventListener('input', () => document.getElementById('cc-val').textContent = cc.value);
+cd.addEventListener('input', () => document.getElementById('cd-val').textContent = cd.value + 's');
 
-// ── FILE UPLOAD ──
-const dropzone = document.getElementById('dropzone');
-const fileInput = document.getElementById('file-input');
-const pill = document.getElementById('file-pill');
-const forgeBtn = document.getElementById('forge-btn');
+// ── FILE
+const dz = document.getElementById('dropzone');
+const fi = document.getElementById('file-input');
+const chip = document.getElementById('file-chip');
 
 function setFile(f) {
   if (!f || !f.type.startsWith('video/')) { showErr('Please upload a valid video file.'); return; }
   file = f;
-  document.getElementById('pill-name').textContent = f.name;
-  document.getElementById('pill-size').textContent = fmtSize(f.size);
-  pill.classList.add('show');
+  document.getElementById('fc-name').textContent = f.name;
+  document.getElementById('fc-size').textContent = fmtSize(f.size);
+  chip.classList.add('show');
   checkReady();
 }
 
-fileInput.addEventListener('change', e => setFile(e.target.files[0]));
-document.getElementById('pill-remove').addEventListener('click', e => {
-  e.stopPropagation();
-  file = null;
-  pill.classList.remove('show');
-  fileInput.value = '';
+fi.addEventListener('change', e => setFile(e.target.files[0]));
+document.getElementById('fc-rm').addEventListener('click', e => {
+  e.stopPropagation(); file = null;
+  chip.classList.remove('show'); fi.value = '';
   checkReady();
 });
-dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('over'); });
-dropzone.addEventListener('dragleave', () => dropzone.classList.remove('over'));
-dropzone.addEventListener('drop', e => {
-  e.preventDefault(); dropzone.classList.remove('over');
-  setFile(e.dataTransfer.files[0]);
-});
-
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); setFile(e.dataTransfer.files[0]); });
 document.getElementById('anthropic-key').addEventListener('input', checkReady);
 
 function checkReady() {
-  const ok = !!file && document.getElementById('anthropic-key').value.trim().length > 10;
-  forgeBtn.disabled = !ok;
+  document.getElementById('forge-btn').disabled =
+    !(file && document.getElementById('anthropic-key').value.trim().length > 10);
 }
 
 function fmtSize(b) {
-  if (b > 1e9) return (b/1e9).toFixed(1) + ' GB';
-  if (b > 1e6) return (b/1e6).toFixed(1) + ' MB';
-  return (b/1e3).toFixed(0) + ' KB';
+  if (b > 1e9) return (b/1e9).toFixed(1)+' GB';
+  if (b > 1e6) return (b/1e6).toFixed(1)+' MB';
+  return Math.round(b/1e3)+' KB';
 }
 
-// ── FORGE ──
-forgeBtn.addEventListener('click', async () => {
+// ── FORGE
+document.getElementById('forge-btn').addEventListener('click', async () => {
   if (!file) return;
   hideErr();
-  forgeBtn.disabled = true;
-
-  document.getElementById('prog-panel').classList.add('show');
-  document.getElementById('results-panel').classList.remove('show');
-  setStepActive('step-upload');
+  document.getElementById('forge-btn').disabled = true;
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('results-wrap').style.display = 'none';
+  document.getElementById('prog-card').classList.add('show');
+  resetSteps();
 
   const fd = new FormData();
   fd.append('file', file);
   fd.append('clip_count', cc.value);
   fd.append('clip_duration', cd.value);
-  fd.append('format', state.format);
-  fd.append('clip_style', state.style);
-  fd.append('subtitles', document.getElementById('sub-toggle').checked);
-  fd.append('subtitle_style', state.sub_style);
-  fd.append('subtitle_position', state.sub_pos);
-  fd.append('subtitle_preset', state.sub_preset);
-  fd.append('remove_silence', document.getElementById('silence-toggle').checked);
-  fd.append('normalize_audio', document.getElementById('normalize-toggle').checked);
-  fd.append('transition', state.transition);
-  fd.append('music_vibe', state.music);
+  fd.append('format', st.format);
+  fd.append('clip_style', st.style);
+  fd.append('subtitles', document.getElementById('sub-on').checked);
+  fd.append('subtitle_style', st.sub_style);
+  fd.append('subtitle_position', st.sub_pos);
+  fd.append('subtitle_preset', st.sub_preset);
+  fd.append('remove_silence', document.getElementById('silence-on').checked);
+  fd.append('normalize_audio', document.getElementById('norm-on').checked);
+  fd.append('transition', st.transition);
   fd.append('content_brief', document.getElementById('brief').value.trim());
   fd.append('anthropic_key', document.getElementById('anthropic-key').value.trim());
   fd.append('groq_key', document.getElementById('groq-key').value.trim());
 
   try {
-    const r = await fetch('/api/process', { method: 'POST', body: fd });
-    if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'Upload failed'); }
+    const r = await fetch('/api/process', { method:'POST', body: fd });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.detail||'Upload failed'); }
     const { job_id } = await r.json();
     poll(job_id);
-  } catch (e) {
+  } catch(e) {
     showErr(e.message);
-    forgeBtn.disabled = false;
-    document.getElementById('prog-panel').classList.remove('show');
+    document.getElementById('forge-btn').disabled = false;
+    document.getElementById('prog-card').classList.remove('show');
+    document.getElementById('empty-state').style.display = 'flex';
   }
 });
 
-// ── POLLING ──
-let pollTimer = null;
-
-function poll(jobId) {
-  pollTimer = setInterval(async () => {
+// ── POLL
+let timer = null;
+function poll(id) {
+  timer = setInterval(async () => {
     try {
-      const r = await fetch(`/api/status/${jobId}`);
-      const job = await r.json();
-      updateProg(job.progress, job.message);
-      updateSteps(job.progress);
-
-      if (job.status === 'done') {
-        clearInterval(pollTimer);
-        showResults(job.clips);
-      } else if (job.status === 'error') {
-        clearInterval(pollTimer);
-        document.getElementById('prog-panel').classList.remove('show');
-        showErr('Error: ' + job.error);
-        forgeBtn.disabled = false;
+      const j = await (await fetch(`/api/status/${id}`)).json();
+      setProg(j.progress, j.message);
+      updateSteps(j.progress);
+      if (j.status === 'done') {
+        clearInterval(timer);
+        showResults(j.clips);
+      } else if (j.status === 'error') {
+        clearInterval(timer);
+        document.getElementById('prog-card').classList.remove('show');
+        showErr(j.error);
+        document.getElementById('forge-btn').disabled = false;
       }
     } catch {
-      clearInterval(pollTimer);
-      showErr('Lost connection to server. Refresh and try again.');
+      clearInterval(timer);
+      showErr('Lost connection to server.');
     }
   }, 1500);
 }
 
-function updateProg(pct, msg) {
+function setProg(pct, msg) {
   document.getElementById('prog-fill').style.width = pct + '%';
   document.getElementById('prog-pct').textContent = pct + '%';
-  document.getElementById('prog-msg').textContent = '> ' + msg;
+  document.getElementById('prog-msg').textContent = msg;
 }
 
 function updateSteps(pct) {
-  if (pct >= 5)  { setStepDone('step-upload');     setStepActive('step-transcribe'); }
-  if (pct >= 42) { setStepDone('step-transcribe');  setStepActive('step-ai'); }
-  if (pct >= 62) { setStepDone('step-ai');          setStepActive('step-render'); }
-  if (pct >= 100){ setStepDone('step-render'); }
+  if (pct >= 5)  { done('s-upload');     active('s-transcribe'); }
+  if (pct >= 42) { done('s-transcribe'); active('s-ai'); }
+  if (pct >= 62) { done('s-ai');         active('s-render'); }
+  if (pct >= 100){ done('s-render'); }
 }
 
-function setStepActive(id) {
+function active(id) {
   const el = document.getElementById(id);
   if (el && !el.classList.contains('done')) el.classList.add('active');
 }
-function setStepDone(id) {
+function done(id) {
   const el = document.getElementById(id);
-  if (el) { el.classList.remove('active'); el.classList.add('done'); }
+  if (el) { el.classList.remove('active'); el.classList.add('done'); el.querySelector('.step-dot').textContent = '✓'; }
+}
+function resetSteps() {
+  ['s-upload','s-transcribe','s-ai','s-render'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('active','done'); el.querySelector('.step-dot').textContent = id.slice(-1)==='d'?'4':({'s-upload':'1','s-transcribe':'2','s-ai':'3','s-render':'4'}[id]); }
+  });
+  // re-set numbers
+  document.querySelector('#s-upload .step-dot').textContent    = '1';
+  document.querySelector('#s-transcribe .step-dot').textContent= '2';
+  document.querySelector('#s-ai .step-dot').textContent        = '3';
+  document.querySelector('#s-render .step-dot').textContent    = '4';
 }
 
-// ── RESULTS ──
+// ── RESULTS
 function showResults(clips) {
-  document.getElementById('prog-panel').classList.remove('show');
-  document.getElementById('results-panel').classList.add('show');
-  document.getElementById('results-count').textContent = clips.length + ' clip' + (clips.length !== 1 ? 's' : '');
+  document.getElementById('prog-card').classList.remove('show');
+  document.getElementById('results-wrap').style.display = 'block';
+  document.getElementById('results-meta').textContent = `${clips.length} clip${clips.length!==1?'s':''} generated`;
 
-  const list = document.getElementById('clips-list');
-  list.innerHTML = '';
+  const grid = document.getElementById('clips-grid');
+  grid.innerHTML = '';
 
   clips.forEach((clip, i) => {
-    const bars = Array.from({ length: 10 }, (_, j) =>
-      `<span class="score-bar-item" style="height:${6 + j * 1.2}px" ${j < clip.score ? 'class="score-bar-item lit"' : ''}></span>`
-    ).join('');
-
     const bd = clip.score_breakdown || {};
-    const breakdown = ['hook', 'retention', 'shareability'].map(k =>
-      `<span class="breakdown-item"><span>${k}</span> <span class="breakdown-val">${bd[k] || '—'}/10</span></span>`
-    ).join('');
-
     const card = document.createElement('div');
     card.className = 'clip-card';
-    card.style.animationDelay = (i * 0.08) + 's';
+    card.style.animationDelay = (i * 0.07) + 's';
     card.innerHTML = `
       <div class="clip-num">0${i+1}</div>
       <div class="clip-body">
         <div class="clip-title">${esc(clip.title)}</div>
-        ${clip.hook ? `<div class="clip-hook">${esc(clip.hook)}</div>` : ''}
+        ${clip.hook ? `<div class="clip-hook">"${esc(clip.hook)}"</div>` : ''}
         <div class="clip-reason">${esc(clip.reason)}</div>
-        <div class="clip-meta">
-          <span class="meta-pill">${clip.duration}s</span>
-          <span class="meta-pill">${fmtTime(clip.start)} → ${fmtTime(clip.end)}</span>
-          <span class="score-mini">
-            <span class="score-bars">${bars}</span>
-            ${clip.score}/10
-          </span>
+        <div class="clip-tags">
+          <span class="tag">${clip.duration}s</span>
+          <span class="tag">${fmtT(clip.start)} → ${fmtT(clip.end)}</span>
+          <span class="tag score">Score ${clip.score}/10</span>
         </div>
-        <div class="score-breakdown">${breakdown}</div>
+        <div class="score-breakdown">
+          ${['hook','retention','shareability'].map(k=>`
+            <span class="bd-item">${k} <span class="bd-val">${bd[k]??'—'}/10</span></span>
+          `).join('')}
+        </div>
       </div>
-      <div class="clip-actions">
-        <a href="/api/download/${encodeURIComponent(clip.filename)}" class="dl-btn" download>
-          ⬇ Download
-        </a>
-      </div>
-    `;
-    list.appendChild(card);
+      <a href="/api/download/${encodeURIComponent(clip.filename)}" class="dl-btn" download>
+        ↓ Download
+      </a>`;
+    grid.appendChild(card);
   });
 }
 
 document.getElementById('reset-btn').addEventListener('click', () => {
-  file = null;
-  pill.classList.remove('show');
-  fileInput.value = '';
-  document.getElementById('results-panel').classList.remove('show');
-  document.getElementById('prog-panel').classList.remove('show');
-  document.getElementById('clips-list').innerHTML = '';
-  ['step-upload','step-transcribe','step-ai','step-render'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.classList.remove('active','done'); }
-  });
-  hideErr();
-  checkReady();
+  file = null; document.getElementById('file-chip').classList.remove('show');
+  document.getElementById('file-input').value = '';
+  document.getElementById('results-wrap').style.display = 'none';
+  document.getElementById('empty-state').style.display = 'flex';
+  hideErr(); checkReady();
 });
 
-function showErr(msg) {
-  const b = document.getElementById('err-box');
-  b.textContent = '⚠ ' + msg; b.classList.add('show');
-}
-function hideErr() { document.getElementById('err-box').classList.remove('show'); }
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function fmtTime(s) {
-  const m = Math.floor(s/60), sec = Math.floor(s%60);
-  return `${m}:${sec.toString().padStart(2,'0')}`;
-}
+function showErr(m) { const b=document.getElementById('err-box'); b.textContent='⚠ '+m; b.classList.add('show'); }
+function hideErr()  { document.getElementById('err-box').classList.remove('show'); }
+function esc(s)  { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtT(s) { return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
 </script>
 </body>
 </html>
